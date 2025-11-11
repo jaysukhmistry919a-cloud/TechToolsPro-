@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="description" content="Tech Tools Pro - All-in-one utility app with calculators, QR generator, and more">
+    <meta name="theme-color" content="#1e3c72">
+    <title>Tech Tools Pro - Swiss Army Knife of Utilities</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 15px;
+            padding-bottom: 30px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .header h1 {
+            color: #1e3c72;
+            font-size: 28px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .tool-card {
+            background: white;
+            border-radius: 18px;
+            padding: 25px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(30, 60, 114, 0.1), rgba(42, 82, 152, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tool-card:hover::before {
+            opacity: 1;
+        }
+
+        .tool-card:active {
+            transform: scale(0.95);
+        }
+
+        .tool-icon {
+            font-size: 45px;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        .tool-name {
+            color: #333;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .tool-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            display: none;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tool-panel.active {
+            display: block;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .panel-title {
+            font-size: 22px;
+            color: #1e3c72;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            font-size: 22px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(255, 68, 68, 0.3);
+        }
+
+        .close-btn:hover {
+            background: #cc0000;
+            transform: rotate(90deg);
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #333;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            background: #fafafa;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #1e3c72;
+            background: white;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(30, 60, 114, 0.3);
+        }
+
+        .btn:hover {
+            box-shadow: 0 6px 20px rgba(30, 60, 114, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-left: 5px solid #4CAF50;
+            padding: 18px;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .result-box.active {
+            display: block;
+        }
+
+        .result-box h3 {
+            color: #2e7d32;
+            font-size: 16px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .result-box p {
+            color: #1b5e20;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        #qr-output {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #qr-output img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .password-display {
+            background: #f5f5f5;
+            padding: 18px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            word-break: break-all;
+            margin-top: 20px;
+            display: none;
+            border: 2px solid #e0e0e0;
+            line-height: 1.6;
+        }
+
+        .password-display.active {
+            display: block;
+        }
+
+        .color-preview {
+            width: 100%;
+            height: 120px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border: 3px solid #e0e0e0;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .footer {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .footer p {
+            color: white;
+            font-size: 13px;
+            margin: 5px 0;
+        }
+
+        @media (max-width: 480px) {
+            .tools-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .panel-title {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ Tech Tools Pro</h1>
+            <p>Your Swiss Army Knife of Utilities</p>
+        </div>
+
+        <div class="tools-grid" id="tools-grid">
+            <div class="tool-card" onclick="openTool('bmi')">
+                <div class="tool-icon">💪</div>
+                <div class="tool-name">BMI Calculator</div>
+            </div>
+            <div class="tool-card" onclick="openTool('age')">
+                <div class="tool-icon">🎂</div>
+                <div class="tool-name">Age Calculator</div>
+            </div>
+            <div class="tool-card" onclick="openTool('percentage')">
+                <div class="tool-icon">📊</div>
+                <div class="tool-name">Percentage Calc</div>
+            </div>
+            <div class="tool-card" onclick="openTool('qr')">
+                <div class="tool-icon">📱</div>
+                <div class="tool-name">QR Generator</div>
+            </div>
+            <div class="tool-card" onclick="openTool('password')">
+                <div class="tool-icon">🔐</div>
+                <div class="tool-name">Password Gen</div>
+            </div>
+            <div class="tool-card" onclick="openTool('color')">
+                <div class="tool-icon">🎨</div>
+                <div class="tool-name">Color Picker</div>
+            </div>
+        </div>
+
+        <!-- BMI Calculator -->
+        <div class="tool-panel" id="bmi-panel">
+            <div class="panel-header">
+                <div class="panel-title">💪 BMI Calculator</div>
+                <button class="close-btn" onclick="closeTool()">×</button>
+            </div>
+            <div class="input-group">
+                <label>Weight (kg)</label>
+                <input type="number" id="weight" placeholder="Enter your weight" step="0.1">
+            </div>
+            <div class="input-group">
+                <label>Height (cm)</label>
+                <input type="number" id="height" placeholder="Enter your height" step="0.1">
+            </div>
+            <button class="btn" onclick="calculateBMI()">Calculate BMI</button>
+            <div class="result-box" id="bmi-result">
+                <h3>Your BMI Result:</h3>
+                <p id="bmi-value"></p>
+                <p id="bmi-category" style="font-size: 15px; margin-top: 8px;"></p>
+            </div>
+        </div>
+
+        <!-- Age Calculator -->
+        <div class="tool-panel" id="age-panel">
+            <div class="panel-header">
+                <div class="panel-title">🎂 Age Calculator</div>
+                <button class="close-btn" onclick="closeTool()">×</button>
+            </div>
+            <div class="input-group">
+                <label>Date of Birth</label>
+                <input type="date" id="dob" max="">
+            </div>
+            <button class="btn" onclick="calculateAge()">Calculate Age</button>
+            <div class="result-box" id="age-result">
+                <h3>Your Age:</h3>
+                <p id="age-value"></p>
+            </div>
+        </div>
+
+        <!-- Percentage Calculator -->
+        <div class="tool-panel" id="percentage-panel">
+            <div class="panel-header">
+                <div class="panel-title">📊 Percentage Calculator</div>
+                <button class="close-btn" onclick="closeTool()">×</button>
+            </div>
+            <div class="input-group">
+                <label>Value (Obtained)</label>
+                <input type="number" id="percent-value" placeholder="Enter value" step="0.01">
+            </div>
+            <div class="input-group">
+                <label>Total (Maximum)</label>
+                <input type="number" id="percent-total" placeholder="Enter total" step="0.01">
+            </div>
+            <button class="btn" onclick="calculatePercentage()">Calculate Percentage</button>
+            <div class="result-box" id="percent-result">
+                <h3>Result:</h3>
+                <p id="percent-answer"></p>
+            </div>
+        </div>
+
+        <!-- QR Code Generator -->
+        <div class="tool-panel" id="qr-panel">
+            <div class="panel-header">
+                <div class="panel-title">📱 QR Code Generator</div>
+                <button class="close-btn" onclick="closeTool()">×</button>
+            </div>
+            <div class="input-group">
+                <label>Text, URL, or Data</label>
+                <input type="text" id="qr-text" placeholder="Enter text or URL to encode">
+            </div>
+            <button class="btn" onclick="generateQR()">Generate QR Code</button>
+            <div id="qr-output"></div>
+        </div>
+
+        <!-- Password Generator -->
+        <div class="tool-panel" id="password-panel">
+            <div class="panel-header">
+                <div class="panel-title">🔐 Password Generator</div>
+                <button class="close-btn" onclick="closeTool()">×</button>
+            </div>
+            <div class="input-group">
+                <label>Password Length (8-32)</label>
+                <input type="number" id="pass-length" value="16" min="8" max="32">
+            </div>
+            <button class="btn" onclick="generatePassword()">Generate Secure Password</button>
+            <div class="password-display" id="password-output"></div>
+            <button class="btn" onclick="copyPassword()" style="display: none; background: #4CAF50;" id="copy-btn">📋 Copy Password</button>
+        </div>
+
+        <!-- Color Picker -->
+        <div class="tool-panel" id="color-panel">
+            <div class="panel-header">
+                <div class="panel-title">🎨 Color Picker</div>
+                <button class="close-btn" onclick="closeTool()">×</button>
+            </div>
+            <div class="input-group">
+                <label>Pick a Color</label>
+                <input type="color" id="color-picker" value="#1e3c72" style="height: 60px; cursor: pointer;">
+            </div>
+            <div class="color-preview" id="color-preview"></div>
+            <div class="result-box active" style="margin-top: 20px; background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border-left-color: #2196F3;">
+                <h3 style="color: #1565C0;">Color Code:</h3>
+                <p id="color-code" style="color: #0d47a1;">#1E3C72</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>⚡ Tech Tools Pro - Made with ❤️</p>
+            <p>© 2025 | All Rights Reserved</p>
+        </div>
+    </div>
+
+    <script>
+        // Set max date for DOB input to today
+        document.getElementById('dob').max = new Date().toISOString().split('T')[0];
+
+        function openTool(tool) {
+            closeTool();
+            document.getElementById(tool + '-panel').classList.add('active');
+            document.getElementById('tools-grid').style.display = 'none';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function closeTool() {
+            const panels = document.querySelectorAll('.tool-panel');
+            panels.forEach(panel => panel.classList.remove('active'));
+            
+            // Reset all result boxes
+            const resultBoxes = document.querySelectorAll('.result-box');
+            resultBoxes.forEach(box => {
+                if (!box.id.includes('color')) {
+                    box.classList.remove('active');
+                }
+            });
+            
+            document.getElementById('tools-grid').style.display = 'grid';
+        }
+
+        function calculateBMI() {
+            const weight = parseFloat(document.getElementById('weight').value);
+            const height = parseFloat(document.getElementById('height').value) / 100;
+            
+            if (!weight || !height || weight <= 0 || height <= 0) {
+                alert('⚠️ Please enter valid positive values!');
+                return;
+            }
+            
+            const bmi = (weight / (height * height)).toFixed(1);
+            let category = '';
+            let emoji = '';
+            
+            if (bmi < 18.5) {
+                category = 'Underweight';
+                emoji = '⚖️';
+            } else if (bmi < 25) {
+                category = 'Normal weight';
+                emoji = '✅';
+            } else if (bmi < 30) {
+                category = 'Overweight';
+                emoji = '⚠️';
+            } else {
+                category = 'Obese';
+                emoji = '🔴';
+            }
+            
+            document.getElementById('bmi-value').textContent = bmi;
+            document.getElementById('bmi-category').textContent = emoji + ' ' + category;
+            document.getElementById('bmi-result').classList.add('active');
+        }
+
+        function calculateAge() {
+            const dob = new Date(document.getElementById('dob').value);
+            if (!dob.getTime()) {
+                alert('⚠️ Please select a valid date!');
+                return;
+            }
+            
+            const today = new Date();
+            
+            if (dob > today) {
+                alert('⚠️ Date of birth cannot be in the future!');
+                return;
+            }
+            
+            let years = today.getFullYear() - dob.getFullYear();
+            let months = today.getMonth() - dob.getMonth();
+            let days = today.getDate() - dob.getDate();
+            
+            if (days < 0) {
+                months--;
+                const lastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+                days += lastMonth.getDate();
+            }
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+            
+            const totalDays = Math.floor((today - dob) / (1000 * 60 * 60 * 24));
+            
+            document.getElementById('age-value').innerHTML = 
+                `<strong>${years}</strong> years, <strong>${months}</strong> months, <strong>${days}</strong> days<br>
+                <span style="font-size: 14px; opacity: 0.8;">(${totalDays.toLocaleString()} days total)</span>`;
+            document.getElementById('age-result').classList.add('active');
+        }
+
+        function calculatePercentage() {
+            const value = parseFloat(document.getElementById('percent-value').value);
+            const total = parseFloat(document.getElementById('percent-total').value);
+            
+            if (!value || !total || total <= 0) {
+                alert('⚠️ Please enter valid values! Total must be greater than 0.');
+                return;
+            }
+            
+            const percent = ((value / total) * 100).toFixed(2);
+            document.getElementById('percent-answer').textContent = percent + '%';
+            document.getElementById('percent-result').classList.add('active');
+        }
+
+        function generateQR() {
+            const text = document.getElementById('qr-text').value.trim();
+            if (!text) {
+                alert('⚠️ Please enter text or URL!');
+                return;
+            }
+            
+            const qrUrl = `https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=${encodeURIComponent(text)}`;
+            document.getElementById('qr-output').innerHTML = 
+                `<img src="${qrUrl}" alt="QR Code" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22><rect width=%22300%22 height=%22300%22 fill=%22%23f0f0f0%22/><text x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22>QR Code</text></svg>'">`;
+        }
+
+        function generatePassword() {
+            const length = parseInt(document.getElementById('pass-length').value);
+            
+            if (length < 8 || length > 32) {
+                alert('⚠️ Password length must be between 8 and 32 characters!');
+                return;
+            }
+            
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}|;:,.<>?';
+            let password = '';
+            
+            // Ensure at least one of each type
+            const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const lower = 'abcdefghijklmnopqrstuvwxyz';
+            const numbers = '0123456789';
+            const special = '!@#$%^&*()-_=+[]{}|;:,.<>?';
+            
+            password += upper.charAt(Math.floor(Math.random() * upper.length));
+            password += lower.charAt(Math.floor(Math.random() * lower.length));
+            password += numbers.charAt(Math.floor(Math.random() * numbers.length));
+            password += special.charAt(Math.floor(Math.random() * special.length));
+            
+            for (let i = password.length; i < length; i++) {
+                password += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            
+            // Shuffle password
+            password = password.split('').sort(() => Math.random() - 0.5).join('');
+            
+            document.getElementById('password-output').textContent = password;
+            document.getElementById('password-output').classList.add('active');
+            document.getElementById('copy-btn').style.display = 'block';
+        }
+
+        function copyPassword() {
+            const password = document.getElementById('password-output').textContent;
+            
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(password).then(() => {
+                    const btn = document.getElementById('copy-btn');
+                    btn.textContent = '✅ Copied!';
+                    btn.style.background = '#4CAF50';
+                    setTimeout(() => {
+                        btn.textContent = '📋 Copy Password';
+                    }, 2000);
+                }).catch(() => {
+                    fallbackCopyPassword(password);
+                });
+            } else {
+                fallbackCopyPassword(password);
+            }
+        }
+
+        function fallbackCopyPassword(password) {
+            const textarea = document.createElement('textarea');
+            textarea.value = password;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
+                alert('✅ Password copied to clipboard!');
+            } catch (err) {
+                alert('⚠️ Please manually copy the password above.');
+            }
+            
+            document.body.removeChild(textarea);
+        }
+
+        // Color Picker
+        document.getElementById('color-picker').addEventListener('input', function() {
+            const color = this.value;
+            document.getElementById('color-preview').style.background = color;
+            document.getElementById('color-code').textContent = color.toUpperCase();
+        });
+
+        // Initialize color picker
+        const initialColor = '#1e3c72';
+        document.getElementById('color-preview').style.background = initialColor;
+        document.getElementById('color-code').textContent = initialColor.toUpperCase();
+
+        // Prevent form submission on enter
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const panel = this.closest('.tool-panel');
+                    const btn = panel.querySelector('.btn');
+                    if (btn) btn.click();
+                }
+            });
+        });
+
+        console.log('✅ Tech Tools Pro loaded successfully!');
+    </script>
+</body>
+</html>
